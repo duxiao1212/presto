@@ -87,7 +87,8 @@ public class JsonToMapCast
     }
 
     @UsedByGeneratedCode
-    public static Block toMap(MapType mapType, BlockBuilderAppender keyAppender, BlockBuilderAppender valueAppender, SqlFunctionProperties properties, Slice json)
+    public static Block toMap(MapType mapType, BlockBuilderAppender keyAppender,
+            BlockBuilderAppender valueAppender, SqlFunctionProperties properties, Slice json)
     {
         try (JsonParser jsonParser = createJsonParser(JSON_FACTORY, json)) {
             jsonParser.nextToken();

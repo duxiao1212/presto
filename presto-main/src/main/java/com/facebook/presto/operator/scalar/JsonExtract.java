@@ -13,13 +13,14 @@
  */
 package com.facebook.presto.operator.scalar;
 
+import com.facebook.airlift.json.JsonObjectMapperProvider;
 import com.facebook.presto.spi.PrestoException;
 import com.fasterxml.jackson.core.JsonFactory;
-import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonToken;
 import com.fasterxml.jackson.core.io.SerializedString;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableList;
 import io.airlift.slice.DynamicSliceOutput;
 import io.airlift.slice.Slice;
@@ -27,7 +28,9 @@ import io.airlift.slice.Slice;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UncheckedIOException;
+import java.io.OutputStream;
 
+import static com.fasterxml.jackson.databind.SerializationFeature.ORDER_MAP_ENTRIES_BY_KEYS;
 import static com.facebook.presto.spi.StandardErrorCode.INVALID_FUNCTION_ARGUMENT;
 import static com.facebook.presto.util.JsonUtil.createJsonGenerator;
 import static com.facebook.presto.util.JsonUtil.createJsonParser;
@@ -292,6 +295,7 @@ public final class JsonExtract
         }
     }
 
+    private static final ObjectMapper SORTED_MAPPER = new JsonObjectMapperProvider().get().configure(ORDER_MAP_ENTRIES_BY_KEYS, true);
     public static class JsonValueJsonExtractor
             extends PrestoJsonExtractor<Slice>
     {
@@ -302,11 +306,10 @@ public final class JsonExtract
             if (!jsonParser.hasCurrentToken()) {
                 throw new JsonParseException(jsonParser, "Unexpected end of value");
             }
-
             DynamicSliceOutput dynamicSliceOutput = new DynamicSliceOutput(ESTIMATED_JSON_OUTPUT_SIZE);
-            try (JsonGenerator jsonGenerator = createJsonGenerator(JSON_FACTORY, dynamicSliceOutput)) {
-                jsonGenerator.copyCurrentStructure(jsonParser);
-            }
+            //
+            SORTED_MAPPER.writeValue((OutputStream) dynamicSliceOutput, SORTED_MAPPER.readValue(jsonParser, Object.class));
+            jsonParser.nextToken();
             return dynamicSliceOutput.slice();
         }
     }

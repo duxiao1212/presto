@@ -243,8 +243,13 @@ public final class JsonExtract
             }
 
             jsonParser.nextToken(); // Shift to first token of the value
+            T result =  delegate.extract(jsonParser);
 
-            return delegate.extract(jsonParser);
+            while (jsonParser.hasCurrentToken()) {
+                jsonParser.nextToken();
+                jsonParser.skipChildren(); // Skip nested structure if currently at the start of one
+            }
+            return result;
         }
 
         public T processJsonArray(JsonParser jsonParser)

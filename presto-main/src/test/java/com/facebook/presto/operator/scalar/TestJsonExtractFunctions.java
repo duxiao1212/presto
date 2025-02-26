@@ -13,11 +13,13 @@
  */
 package com.facebook.presto.operator.scalar;
 
+import com.facebook.presto.common.type.VarcharType;
 import org.testng.annotations.Test;
 
 import static com.facebook.presto.common.type.BigintType.BIGINT;
 import static com.facebook.presto.common.type.JsonType.JSON;
 import static com.facebook.presto.common.type.VarcharType.VARCHAR;
+import static com.facebook.presto.common.type.VarcharType.createVarcharType;
 import static java.lang.String.format;
 
 public class TestJsonExtractFunctions
@@ -146,5 +148,18 @@ public class TestJsonExtractFunctions
         assertFunction(format("JSON_EXTRACT_SCALAR(JSON'%s', '%s')", json, "$.store.book[1].author"), VARCHAR, "Evelyn Waugh");
 
         assertInvalidFunction(format("JSON_EXTRACT_SCALAR('%s', '%s')", json, "$...invalid"), "Invalid JSON path: '$...invalid'");
+    }
+
+    @Test
+    public void testJsonExtractScalarParseNullIfJsonInvalid() {
+//        String json = "{ \"key_2\": 2, \"key_1\": \"z\"a1\" }";
+//        String json = "{  \"key_1\": \"z\"a1\" ,\"key_2\": 2}";
+//        String path = "$.key_2";
+//        String expected = "2";
+//        VarcharType VARCHAR31 = createVarcharType(31);
+//        assertFunction(format("JSON_EXTRACT_SCALAR('%s', '%s')", json, path), VARCHAR31, expected);
+        VarcharType VARCHAR42 = createVarcharType(65);
+        assertFunction(format("JSON_EXTRACT_SCALAR('%s', '%s')", "{\"x\": {\"a\" : 1 , \"b\" : 2, \"c\" : {\"c1\" : \"ewv\", \"c2\" : \"df\"wef\"}}}", "$.x.a"), VARCHAR42, null);
+//        assertFunction(format("JSON_EXTRACT_SCALAR(JSON'%s', '%s')", json, "$.store.book[1].author"), VARCHAR, "Evelyn Waugh");
     }
 }

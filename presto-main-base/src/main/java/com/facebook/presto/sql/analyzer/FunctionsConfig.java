@@ -48,7 +48,6 @@ public class FunctionsConfig
     private boolean warnOnPossibleNans;
     private boolean legacyCharToVarcharCoercion;
     private boolean legacyJsonCast = true;
-    private boolean canonicalizedJsonExtract;
     private String defaultNamespacePrefix = JAVA_BUILTIN_NAMESPACE.toString();
 
     @Config("deprecated.legacy-array-agg")
@@ -308,19 +307,6 @@ public class FunctionsConfig
     public boolean isLegacyJsonCast()
     {
         return legacyJsonCast;
-    }
-
-    @Config("canonicalized-json-extract")
-    @Description("Extracts json data in a canonicalized manner, and raises a PrestoException when encountering invalid json structures within the input json path")
-    public FunctionsConfig setCanonicalizedJsonExtract(boolean canonicalizedJsonExtract)
-    {
-        this.canonicalizedJsonExtract = canonicalizedJsonExtract;
-        return this;
-    }
-
-    public boolean isCanonicalizedJsonExtract()
-    {
-        return canonicalizedJsonExtract;
     }
 
     @Config("presto.default-namespace")

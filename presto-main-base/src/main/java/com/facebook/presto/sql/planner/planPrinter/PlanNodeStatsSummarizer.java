@@ -133,6 +133,7 @@ public class PlanNodeStatsSummarizer
                     continue;
                 }
 
+
                 operatorInputStats.merge(planNodeId,
                         ImmutableMap.of(
                                 operatorStats.getOperatorType(),

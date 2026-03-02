@@ -85,6 +85,10 @@
 #include "presto_cpp/main/RemoteFunctionRegisterer.h"
 #endif
 
+#ifdef PRESTO_ENABLE_THETA_SKETCH
+#include "presto_cpp/main/functions/theta_sketch/ThetaSketchRegistration.h"
+#endif
+
 #ifdef __linux__
 // Required by BatchThreadFactory
 #include <pthread.h>
@@ -1494,6 +1498,11 @@ void PrestoServer::registerFunctions() {
       velox::connector::hasConnector("hive-hadoop2")) {
     hive::functions::registerHiveNativeFunctions();
   }
+
+#ifdef PRESTO_ENABLE_THETA_SKETCH
+  functions::aggregate::theta_sketch::registerAllThetaSketchFunctions(
+      prestoBuiltinFunctionPrefix_);
+#endif
 }
 
 void PrestoServer::registerRemoteFunctions() {
